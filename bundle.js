@@ -21497,6 +21497,10 @@
 
 	var _NavBar2 = _interopRequireDefault(_NavBar);
 
+	var _InfoPopup = __webpack_require__(190);
+
+	var _InfoPopup2 = _interopRequireDefault(_InfoPopup);
+
 	__webpack_require__(183);
 
 	var _data = __webpack_require__(188);
@@ -21504,8 +21508,6 @@
 	var _data2 = _interopRequireDefault(_data);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -21523,32 +21525,84 @@
 
 			_this.state = {
 				data: _data2.default,
-				cart: []
+				selectedItem: _data2.default[0],
+				cart: [],
+				totalPrice: 0,
+				infoPopupIsOpen: false
 			};
-			_this.popupHide = _this.popupHide.bind(_this);
+			_this.infoPopupOpen = _this.infoPopupOpen.bind(_this);
+			_this.infoPopupHide = _this.infoPopupHide.bind(_this);
+			_this.addToCart = _this.addToCart.bind(_this);
+			_this.removeFromCart = _this.removeFromCart.bind(_this);
 			return _this;
 		}
 
 		_createClass(App, [{
-			key: 'popupHide',
-			value: function popupHide(e) {
-				e.target.classList.remove('popup--show');
-				//document.body.style.overflow = '';
+			key: 'infoPopupOpen',
+			value: function infoPopupOpen() {
+				this.setState({
+					infoPopupIsOpen: true
+				});
 			}
 		}, {
-			key: 'updateCart',
-			value: function updateCart(data) {
+			key: 'infoPopupHide',
+			value: function infoPopupHide() {
+				this.setState({
+					infoPopupIsOpen: false
+				});
+			}
+		}, {
+			key: 'selectItem',
+			value: function selectItem(item) {
+				this.setState({
+					selectedItem: item
+				});
+				this.infoPopupOpen();
+			}
+		}, {
+			key: 'addToCart',
+			value: function addToCart(data) {
 				var _this2 = this;
 
-				return function (e) {
-					e.preventDefault();
-					var newData = [].concat(_toConsumableArray(_this2.state.cart));
-					newData.push(data);
-					_this2.setState({
-						cart: newData
-					});
-					console.log(_this2.state.cart);
-				};
+				var newData = this.state.cart.slice(0);
+				newData.push(data);
+				this.setState({
+					cart: newData
+				}, function () {
+					_this2.totalPrice();
+				});
+			}
+		}, {
+			key: 'removeFromCart',
+			value: function removeFromCart(item) {
+				var _this3 = this;
+
+				var newData = this.state.cart.slice(0);
+				newData.splice(item, 1);
+				this.setState({
+					cart: newData
+				}, function () {
+					_this3.totalPrice();
+				});
+			}
+		}, {
+			key: 'totalPrice',
+			value: function totalPrice() {
+				var total = 0;
+				this.state.cart.forEach(function (item, index) {
+					if (item.quantity > 1 && item.quantity < 4) {
+						total += item.price * item.quantity;
+					} else if (item.quantity > 3 && item.quantity < 6) {
+						total += item.price * item.quantity - item.price * item.quantity * 0.15;
+					} else if (item.quantity > 5) {
+						total += item.price * item.quantity - item.price * item.quantity * 0.25;
+					} else {
+						total += item.price;
+					}
+				});
+				this.setState({
+					totalPrice: total
+				});
 			}
 		}, {
 			key: 'render',
@@ -21556,9 +21610,13 @@
 				return _react2.default.createElement(
 					'div',
 					{ className: 'container' },
-					_react2.default.createElement(_NavBar2.default, { cart: this.state.cart }),
-					_react2.default.createElement(_List2.default, { data: this.state.data, update: this.updateCart.bind(this) }),
-					_react2.default.createElement('div', { className: 'popup', onClick: this.popupHide })
+					_react2.default.createElement(_NavBar2.default, { cart: this.state.cart, remove: this.removeFromCart, total: this.state.totalPrice }),
+					_react2.default.createElement(_List2.default, { data: this.state.data, onItemSelect: this.selectItem.bind(this) }),
+					_react2.default.createElement(_InfoPopup2.default, {
+						item: this.state.selectedItem,
+						update: this.addToCart,
+						popupIsOpen: this.state.infoPopupIsOpen,
+						popupHide: this.infoPopupHide })
 				);
 			}
 		}]);
@@ -21586,9 +21644,9 @@
 
 	var _reactDom = __webpack_require__(32);
 
-	var _Info = __webpack_require__(180);
+	var _ListItem = __webpack_require__(189);
 
-	var _Info2 = _interopRequireDefault(_Info);
+	var _ListItem2 = _interopRequireDefault(_ListItem);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21604,51 +21662,23 @@
 		function List(props) {
 			_classCallCheck(this, List);
 
-			var _this = _possibleConstructorReturn(this, (List.__proto__ || Object.getPrototypeOf(List)).call(this, props));
-
-			_this.moreInfo = _this.moreInfo.bind(_this);
-			return _this;
+			return _possibleConstructorReturn(this, (List.__proto__ || Object.getPrototypeOf(List)).call(this, props));
 		}
 
 		_createClass(List, [{
-			key: 'moreInfo',
-			value: function moreInfo(item) {
-				var _this2 = this;
-
-				return function (e) {
-					e.preventDefault();
-					var popup = document.querySelector('.popup');
-					popup.classList.add('popup--show');
-					document.body.style.overflow = 'hidden';
-					(0, _reactDom.render)(_react2.default.createElement(_Info2.default, { item: item, update: _this2.props.update }), popup);
-				};
-			}
-		}, {
 			key: 'render',
 			value: function render() {
-				var _this3 = this;
+				var _this2 = this;
 
 				return _react2.default.createElement(
 					'ul',
 					{ className: 'list' },
 					this.props.data.map(function (item) {
-						return _react2.default.createElement(
-							'li',
-							{ key: item.id, className: 'list__item', onClick: _this3.moreInfo(item) },
-							_react2.default.createElement('img', { src: item.image }),
-							_react2.default.createElement(
-								'h4',
-								null,
-								item.name
-							),
-							_react2.default.createElement(
-								'p',
-								null,
-								'\u0426\u0435\u043D\u0430: ',
-								item.price,
-								'$'
-							)
-						);
+						return _react2.default.createElement(_ListItem2.default, {
+							key: item.id,
+							data: item,
+							onItemSelect: _this2.props.onItemSelect
+						});
 					})
 				);
 			}
@@ -21660,7 +21690,8 @@
 		exports.default = List;
 
 /***/ },
-/* 180 */
+/* 180 */,
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21677,147 +21708,7 @@
 
 	var _reactDom = __webpack_require__(32);
 
-	var _Cart = __webpack_require__(181);
-
-	var _Cart2 = _interopRequireDefault(_Cart);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var InfoPopup = function (_Component) {
-		_inherits(InfoPopup, _Component);
-
-		function InfoPopup(props) {
-			_classCallCheck(this, InfoPopup);
-
-			var _this = _possibleConstructorReturn(this, (InfoPopup.__proto__ || Object.getPrototypeOf(InfoPopup)).call(this, props));
-
-			_this.updateCart = _this.updateCart.bind(_this);
-			return _this;
-		}
-
-		_createClass(InfoPopup, [{
-			key: 'popupHide',
-			value: function popupHide(e) {
-				e.preventDefault();
-				document.querySelector('.popup').classList.remove('popup--show');
-				document.body.style.overflow = '';
-			}
-		}, {
-			key: 'updateCart',
-			value: function updateCart() {
-				var item = {};
-				item.id = this.props.item.id;
-				item.name = this.props.item.name;
-				return item;
-			}
-		}, {
-			key: 'render',
-			value: function render() {
-				var item = this.props.item;
-
-				return _react2.default.createElement(
-					'div',
-					{ className: 'info' },
-					_react2.default.createElement(
-						'div',
-						{ className: 'col' },
-						_react2.default.createElement('img', { src: item.image, className: 'info__image' })
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'col' },
-						_react2.default.createElement(
-							'h3',
-							{ className: 'info__name' },
-							item.name
-						),
-						_react2.default.createElement(
-							'p',
-							{ className: 'info__desc' },
-							item.desc
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'info__sizes' },
-							_react2.default.createElement(
-								'form',
-								{ className: 'form-buy', onSubmit: this.props.update(this.updateCart()) },
-								_react2.default.createElement(
-									'fieldset',
-									{ className: 'form-buy__sizes' },
-									item.sizes.map(function (size) {
-										return _react2.default.createElement(
-											'label',
-											{ className: 'form-buy__size' },
-											_react2.default.createElement('input', { type: 'radio', name: 'options' }),
-											_react2.default.createElement(
-												'span',
-												null,
-												size
-											)
-										);
-									})
-								),
-								_react2.default.createElement(
-									'fieldset',
-									null,
-									_react2.default.createElement(
-										'label',
-										{ className: 'info__price' },
-										'\u0426\u0435\u043D\u0430: ',
-										_react2.default.createElement('input', { type: 'text', value: item.price, readOnly: true }),
-										'$'
-									),
-									_react2.default.createElement(
-										'label',
-										{ className: 'info__quantity' },
-										'\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E: ',
-										_react2.default.createElement('input', { type: 'number', min: '1', max: '9', defaultValue: '1' })
-									)
-								),
-								_react2.default.createElement(
-									'button',
-									{ type: 'submit', className: 'btn-buy', href: '' },
-									'\u041A\u0443\u043F\u0438\u0442\u044C'
-								)
-							)
-						),
-						_react2.default.createElement(
-							'a',
-							{ className: 'popup-hide', href: '', onClick: this.popupHide.bind(this) },
-							'\u2716'
-						)
-					)
-				);
-			}
-		}]);
-
-		return InfoPopup;
-	}(_react.Component);
-
-		exports.default = InfoPopup;
-
-/***/ },
-/* 181 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
+	var _reactDom2 = _interopRequireDefault(_reactDom);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21830,29 +21721,108 @@
 	var Cart = function (_Component) {
 		_inherits(Cart, _Component);
 
-		function Cart() {
+		function Cart(props) {
 			_classCallCheck(this, Cart);
 
-			return _possibleConstructorReturn(this, (Cart.__proto__ || Object.getPrototypeOf(Cart)).apply(this, arguments));
+			var _this = _possibleConstructorReturn(this, (Cart.__proto__ || Object.getPrototypeOf(Cart)).call(this, props));
+
+			_this.removeItem = _this.removeItem.bind(_this);
+			_this.cartClose = _this.cartClose.bind(_this);
+			return _this;
 		}
 
 		_createClass(Cart, [{
-			key: "render",
+			key: 'removeItem',
+			value: function removeItem(item) {
+				var _this2 = this;
+
+				return function (e) {
+					e.preventDefault();
+					_this2.props.remove(item);
+				};
+			}
+		}, {
+			key: 'cartClose',
+			value: function cartClose(e) {
+				var _this3 = this;
+
+				return function (e) {
+					e.preventDefault();
+					_this3.props.cartClose();
+				};
+			}
+		}, {
+			key: 'render',
 			value: function render() {
+				var _this4 = this;
+
 				return _react2.default.createElement(
-					"ul",
-					{ className: "cart" },
-					this.props.cart.map(function (item) {
-						return _react2.default.createElement(
-							"li",
-							null,
-							_react2.default.createElement(
-								"h5",
-								null,
-								item.name
-							)
-						);
-					})
+					'div',
+					{ className: this.props.open ? 'cart-popup--show' : 'cart-popup' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'cart' },
+						_react2.default.createElement(
+							'ul',
+							{ className: 'cart-list' },
+							this.props.cart.map(function (item, index) {
+								return _react2.default.createElement(
+									'li',
+									{ key: index, className: 'cart-list__item' },
+									_react2.default.createElement(
+										'div',
+										{ className: 'col' },
+										_react2.default.createElement('img', { src: item.image, alt: '', className: 'item-image' })
+									),
+									_react2.default.createElement(
+										'div',
+										{ className: 'col' },
+										_react2.default.createElement(
+											'h5',
+											{ className: 'item-name' },
+											item.name
+										),
+										_react2.default.createElement(
+											'span',
+											null,
+											'\u0420\u0430\u0437\u043C\u0435\u0440: ',
+											item.size
+										),
+										_react2.default.createElement(
+											'span',
+											null,
+											'\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E: ',
+											item.quantity
+										),
+										_react2.default.createElement(
+											'span',
+											null,
+											'\u0426\u0435\u043D\u0430: ',
+											item.price,
+											'$'
+										),
+										_react2.default.createElement(
+											'a',
+											{ className: 'item-remove', href: '', onClick: _this4.removeItem(index) },
+											'\u2716'
+										)
+									)
+								);
+							})
+						),
+						_react2.default.createElement(
+							'p',
+							{ className: 'total-price' },
+							'\u0421\u0443\u043C\u043C\u0430: ',
+							this.props.total,
+							'$'
+						),
+						_react2.default.createElement(
+							'a',
+							{ className: 'cart-close', href: '', onClick: this.cartClose() },
+							'\u2716'
+						)
+					)
 				);
 			}
 		}]);
@@ -21895,20 +21865,37 @@
 	var NavBar = function (_Component) {
 		_inherits(NavBar, _Component);
 
-		function NavBar() {
+		function NavBar(props) {
 			_classCallCheck(this, NavBar);
 
-			return _possibleConstructorReturn(this, (NavBar.__proto__ || Object.getPrototypeOf(NavBar)).apply(this, arguments));
+			var _this = _possibleConstructorReturn(this, (NavBar.__proto__ || Object.getPrototypeOf(NavBar)).call(this, props));
+
+			_this.state = {
+				cartIsOpen: false
+			};
+			_this.cartOpen = _this.cartOpen.bind(_this);
+			_this.cartClose = _this.cartClose.bind(_this);
+			return _this;
 		}
 
 		_createClass(NavBar, [{
-			key: 'cartShow',
-			value: function cartShow(e) {
-				e.preventDefault();
-				var popup = document.querySelector('.popup');
-				popup.classList.add('popup--show');
-				document.body.style.overflow = 'hidden';
-				(0, _reactDom.render)(_react2.default.createElement(_Cart2.default, { cart: this.props.cart }), popup);
+			key: 'cartOpen',
+			value: function cartOpen(e) {
+				var _this2 = this;
+
+				return function (e) {
+					e.preventDefault();
+					_this2.setState({
+						cartIsOpen: true
+					});
+				};
+			}
+		}, {
+			key: 'cartClose',
+			value: function cartClose() {
+				this.setState({
+					cartIsOpen: false
+				});
 			}
 		}, {
 			key: 'render',
@@ -21918,10 +21905,19 @@
 					{ className: 'navbar' },
 					_react2.default.createElement(
 						'a',
-						{ href: '', className: 'btn-cart', onClick: this.cartShow.bind(this) },
-						_react2.default.createElement('span', { className: 'cart-items' })
+						{ href: '', className: 'btn-cart', onClick: this.cartOpen() },
+						_react2.default.createElement(
+							'span',
+							{ className: 'cart-items' },
+							this.props.cart.length
+						)
 					),
-					_react2.default.createElement(_Cart2.default, { cart: this.props.cart })
+					_react2.default.createElement(_Cart2.default, {
+						cart: this.props.cart,
+						remove: this.props.remove,
+						total: this.props.total,
+						open: this.state.cartIsOpen,
+						cartClose: this.cartClose })
 				);
 			}
 		}]);
@@ -21966,7 +21962,7 @@
 
 
 	// module
-	exports.push([module.id, "* {\n  margin: 0;\n  padding: 0;\n}\nbody {\n  background-color: rgba(209,208,195,0.5);\n  box-sizing: border-box;\n  color: #696969;\n  font-family: 'Arial';\n}\nli {\n  list-style: none;\n}\na {\n  text-decoration: none;\n}\n.container {\n  margin: 0 auto;\n  min-width: 280px;\n  padding: 20px;\n  width: 90%;\n}\n.list {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-between;\n}\n.list__item {\n  background-color: #fff;\n  border-radius: 5px;\n  cursor: pointer;\n  margin-bottom: 20px;\n  padding: 25px 10px;\n  min-width: 230px;\n  width: 30%;\n  text-align: center;\n  transition: 0.2s;\n}\n.list__item:hover {\n  box-shadow: 0px 0px 25px 5px rgba(0,0,0,0.2);\n}\n@media (max-width: 840px) {\n  .list__item {\n    width: 45%;\n  }\n}\n@media (max-width: 585px) {\n  .list__item {\n    width: 100%;\n  }\n}\n.list img {\n  margin-bottom: 20px;\n  height: 150px;\n  width: 200px;\n}\n.list h4 {\n  margin-bottom: 20px;\n}\n.list p {\n  font-weight: 700;\n  text-transform: uppercase;\n}\n.popup {\n  background-color: rgba(0,0,0,0.5);\n  cursor: pointer;\n  display: flex;\n  height: 100%;\n  width: 100%;\n  position: fixed;\n  top: 0;\n  left: 0;\n  opacity: 0;\n  z-index: -1;\n}\n.popup--show {\n  opacity: 1;\n  z-index: 2;\n}\n.info {\n  background-color: #fff;\n  border-radius: 5px;\n  cursor: default;\n  display: flex;\n  margin: auto;\n  padding: 20px;\n  min-width: 400px;\n  width: 60%;\n  position: relative;\n}\n@media (max-width: 1000px) {\n  .info {\n    flex-direction: column;\n  }\n}\n.info__image {\n  height: auto;\n  width: 80%;\n}\n.info__name {\n  font-size: 20px;\n}\n.info__desc {\n  color: #939393;\n  font-size: 14px;\n  margin: 25px 0;\n}\n.info__price {\n  margin-right: 25px;\n}\n.info fieldset {\n  border: none;\n}\n.info__price,\n.info__quantity {\n  font-weight: 700;\n  font-size: 18px;\n  text-transform: uppercase;\n}\n.info__price input,\n.info__quantity input {\n  border: none;\n  color: #696969;\n  font-weight: 700;\n  font-size: 18px;\n  width: 32px;\n}\n.info__sizes {\n  margin-bottom: 15px;\n}\n.info__sizes .form-buy__sizes {\n  border: none;\n  border-top: 1px solid #15402c;\n  border-bottom: 1px solid #15402c;\n  margin-bottom: 20px;\n}\n.info__sizes .form-buy__size {\n  color: #15402c;\n}\n.info__sizes .form-buy__size input[type='radio'] {\n  display: none;\n}\n.info__sizes .form-buy__size input:checked + span {\n  background-color: #15402c;\n  color: #fff;\n}\n.info__sizes .form-buy__size span {\n  cursor: pointer;\n  display: inline-block;\n  font-weight: 700;\n  padding: 10px;\n}\n.info__sizes .form-buy__size span:hover {\n  background-color: rgba(35,108,74,0.5);\n}\n.info__sizes .form-buy .btn-buy {\n  background-color: #15402c;\n  border-radius: 5px;\n  border: none;\n  color: #fff;\n  cursor: pointer;\n  display: block;\n  height: 40px;\n  line-height: 40px;\n  margin-top: 20px;\n  width: 150px;\n  text-align: center;\n  text-transform: uppercase;\n}\n.info__sizes .form-buy .btn-buy:hover {\n  background-color: #236c4a;\n}\n.info .popup-hide {\n  color: #b10e00;\n  font-size: 18px;\n  position: absolute;\n  top: 5px;\n  right: 10px;\n}\n.info .col {\n  width: 49%;\n}\n@media (max-width: 1000px) {\n  .info .col {\n    width: 100%;\n  }\n  .info .col:nth-of-type(1) {\n    margin-bottom: 20px;\n  }\n}\n.info .col:nth-of-type(1) {\n  text-align: center;\n}\n.navbar {\n  background-color: #f7f7f7;\n  border-radius: 5px;\n  box-shadow: 0px 4px 16px -7px rgba(0,0,0,0.57);\n  display: flex;\n  justify-content: flex-end;\n  margin-bottom: 30px;\n  padding: 10px;\n  position: relative;\n}\n.navbar .btn-cart {\n  background: url(" + __webpack_require__(186) + ") no-repeat 15% 50%;\n  background-size: 40px 40px;\n  background-color: #ebebeb;\n  border-radius: 5px;\n  border: 1px solid #e6e6e6;\n  display: block;\n  height: 50px;\n  width: 70px;\n}\n.navbar .btn-cart:hover {\n  background-color: #e6e6e6;\n}\n.cart {\n  background-color: #ff0;\n  display: block;\n  height: 200px;\n  width: 300px;\n  margin: auto;\n}\n", ""]);
+	exports.push([module.id, "* {\n  margin: 0;\n  padding: 0;\n}\nbody {\n  background-color: rgba(209,208,195,0.5);\n  box-sizing: border-box;\n  color: #696969;\n  font-family: 'Arial';\n}\nli {\n  list-style: none;\n}\na {\n  text-decoration: none;\n}\n.container {\n  margin: 0 auto;\n  min-width: 280px;\n  padding: 20px;\n  width: 90%;\n}\n.list {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-between;\n}\n.list__item {\n  background-color: #fff;\n  border-radius: 5px;\n  cursor: pointer;\n  margin-bottom: 20px;\n  padding: 25px 10px;\n  min-width: 230px;\n  width: 30%;\n  text-align: center;\n  transition: 0.2s;\n}\n.list__item:hover {\n  box-shadow: 0px 0px 25px 5px rgba(0,0,0,0.2);\n}\n@media (max-width: 840px) {\n  .list__item {\n    width: 45%;\n  }\n}\n@media (max-width: 585px) {\n  .list__item {\n    width: 100%;\n  }\n}\n.list img {\n  margin-bottom: 20px;\n  height: 150px;\n  width: 200px;\n}\n.list h4 {\n  margin-bottom: 20px;\n}\n.list p {\n  font-weight: 700;\n  text-transform: uppercase;\n}\n.info-popup {\n  display: none;\n}\n.info-popup--open {\n  background-color: rgba(0,0,0,0.5);\n  display: flex;\n  height: 100%;\n  width: 100%;\n  position: fixed;\n  top: 0;\n  left: 0;\n}\n.info {\n  background-color: #fff;\n  border-radius: 5px;\n  cursor: default;\n  display: flex;\n  margin: auto;\n  padding: 20px;\n  min-width: 400px;\n  width: 60%;\n  position: relative;\n}\n@media (max-width: 1000px) {\n  .info {\n    flex-direction: column;\n  }\n}\n.info__image {\n  height: auto;\n  width: 80%;\n}\n.info__name {\n  font-size: 20px;\n}\n.info__desc {\n  color: #939393;\n  font-size: 14px;\n  margin: 25px 0;\n}\n.info__price {\n  margin-right: 25px;\n}\n.info__price,\n.info__quantity {\n  font-weight: 600;\n  font-size: 16px;\n  text-transform: uppercase;\n}\n.info__price input,\n.info__quantity input {\n  border: none;\n  color: #696969;\n  font-weight: 700;\n  font-size: 18px;\n  width: 32px;\n}\n.info__sizes {\n  border: none;\n  border-top: 1px solid #15402c;\n  border-bottom: 1px solid #15402c;\n  margin-bottom: 20px;\n}\n.info__size {\n  color: #15402c;\n}\n.info__size input[type='radio'] {\n  display: none;\n}\n.info__size input:checked + span {\n  background-color: #15402c;\n  color: #fff;\n}\n.info__size span {\n  cursor: pointer;\n  display: inline-block;\n  font-weight: 700;\n  padding: 10px;\n}\n.info__size span:hover {\n  background-color: rgba(35,108,74,0.5);\n}\n.info .btn-buy {\n  background-color: #15402c;\n  border-radius: 5px;\n  border: none;\n  color: #fff;\n  cursor: pointer;\n  display: block;\n  height: 40px;\n  line-height: 40px;\n  margin-top: 20px;\n  width: 150px;\n  text-align: center;\n  text-transform: uppercase;\n}\n.info .btn-buy:hover {\n  background-color: #236c4a;\n}\n.info .popup-hide {\n  color: #b10e00;\n  font-size: 18px;\n  position: absolute;\n  top: 5px;\n  right: 10px;\n}\n.info .col {\n  width: 49%;\n}\n@media (max-width: 1000px) {\n  .info .col {\n    width: 100%;\n  }\n  .info .col:nth-of-type(1) {\n    margin-bottom: 20px;\n  }\n}\n.info .col:nth-of-type(1) {\n  text-align: center;\n}\n.navbar {\n  background-color: #f7f7f7;\n  border-radius: 5px;\n  box-shadow: 0px 4px 16px -7px rgba(0,0,0,0.57);\n  display: flex;\n  justify-content: flex-end;\n  margin-bottom: 30px;\n  padding: 10px;\n  position: relative;\n}\n.navbar .btn-cart {\n  background: url(" + __webpack_require__(186) + ") no-repeat 15% 50%;\n  background-size: 40px 40px;\n  background-color: #ebebeb;\n  border-radius: 5px;\n  border: 1px solid #e6e6e6;\n  display: block;\n  height: 50px;\n  width: 70px;\n  position: relative;\n}\n.navbar .btn-cart:hover {\n  background-color: #e6e6e6;\n}\n.navbar .btn-cart .cart-items {\n  background-color: #d22;\n  border-radius: 50%;\n  color: #fff;\n  display: block;\n  font-size: 13px;\n  font-weight: 600;\n  padding: 2px 5px;\n  position: absolute;\n  bottom: 5px;\n  right: 5px;\n}\n.cart-popup {\n  display: none;\n}\n.cart-popup--show {\n  background-color: rgba(0,0,0,0.5);\n  display: flex;\n  height: 100%;\n  width: 100%;\n  padding: 10px;\n  position: fixed;\n  top: 0;\n  left: 0;\n}\n.cart {\n  background-color: #f7f7f7;\n  display: flex;\n  flex-direction: column;\n  width: 500px;\n  margin: auto;\n  padding-top: 10px;\n  position: relative;\n}\n.cart .total-price {\n  font-weight: 700;\n  padding: 15px;\n  text-align: right;\n}\n.cart .cart-close {\n  color: #b10e00;\n  position: absolute;\n  top: 3px;\n  left: 5px;\n}\n.cart-list__item {\n  border-bottom: 1px solid #ebebeb;\n  display: flex;\n  margin-bottom: 10px;\n  padding: 15px;\n  position: relative;\n}\n.cart-list__item .col:nth-of-type(1) {\n  margin-right: 20px;\n}\n.cart-list__item .item-image {\n  width: 100px;\n}\n.cart-list__item .item-name {\n  margin-bottom: 10px;\n}\n.cart-list__item span {\n  font-size: 14px;\n  margin-right: 10px;\n  font-weight: 700;\n}\n.cart-list__item .item-remove {\n  color: #b10e00;\n  position: absolute;\n  top: 10px;\n  right: 10px;\n}\n", ""]);
 
 	// exports
 
@@ -22360,6 +22356,240 @@
 	}];
 
 		exports.default = data;
+
+/***/ },
+/* 189 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ListItem = function (_Component) {
+		_inherits(ListItem, _Component);
+
+		function ListItem() {
+			_classCallCheck(this, ListItem);
+
+			return _possibleConstructorReturn(this, (ListItem.__proto__ || Object.getPrototypeOf(ListItem)).apply(this, arguments));
+		}
+
+		_createClass(ListItem, [{
+			key: "render",
+			value: function render() {
+				var _this2 = this;
+
+				var item = this.props.data;
+
+				return _react2.default.createElement(
+					"li",
+					{ className: "list__item", onClick: function onClick() {
+							return _this2.props.onItemSelect(item);
+						} },
+					_react2.default.createElement("img", { src: item.image }),
+					_react2.default.createElement(
+						"h4",
+						null,
+						item.name
+					),
+					_react2.default.createElement(
+						"p",
+						null,
+						"\u0426\u0435\u043D\u0430: ",
+						item.price,
+						"$"
+					)
+				);
+			}
+		}]);
+
+		return ListItem;
+	}(_react.Component);
+
+		exports.default = ListItem;
+
+/***/ },
+/* 190 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(32);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var InfoPopup = function (_Component) {
+		_inherits(InfoPopup, _Component);
+
+		function InfoPopup(props) {
+			_classCallCheck(this, InfoPopup);
+
+			var _this = _possibleConstructorReturn(this, (InfoPopup.__proto__ || Object.getPrototypeOf(InfoPopup)).call(this, props));
+
+			_this.state = {
+				size: null,
+				quantity: 1
+			};
+			_this.chooseSize = _this.chooseSize.bind(_this);
+			_this.chooseQuantity = _this.chooseQuantity.bind(_this);
+			_this.addToCart = _this.addToCart.bind(_this);
+			_this.popupHide = _this.popupHide.bind(_this);
+			return _this;
+		}
+
+		_createClass(InfoPopup, [{
+			key: 'chooseSize',
+			value: function chooseSize(size) {
+				this.setState({
+					size: size
+				});
+			}
+		}, {
+			key: 'chooseQuantity',
+			value: function chooseQuantity(e) {
+				this.setState({
+					quantity: e.target.value
+				});
+			}
+		}, {
+			key: 'addToCart',
+			value: function addToCart() {
+				if (!this.state.size) {
+					return;
+				}
+				this.props.update({
+					id: this.props.item.id,
+					image: this.props.item.image,
+					name: this.props.item.name,
+					size: this.state.size,
+					quantity: this.state.quantity,
+					price: this.props.item.price
+				});
+			}
+		}, {
+			key: 'popupHide',
+			value: function popupHide(e) {
+				var _this2 = this;
+
+				return function (e) {
+					e.preventDefault();
+					_this2.props.popupHide();
+				};
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var _this3 = this;
+
+				var item = this.props.item;
+
+				return _react2.default.createElement(
+					'div',
+					{ className: this.props.popupIsOpen ? 'info-popup--open' : 'info-popup' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'info' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'col' },
+							_react2.default.createElement('img', { src: item.image, className: 'info__image' })
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'col' },
+							_react2.default.createElement(
+								'h3',
+								{ className: 'info__name' },
+								item.name
+							),
+							_react2.default.createElement(
+								'p',
+								{ className: 'info__desc' },
+								item.desc
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'info__sizes' },
+								item.sizes.map(function (size, index) {
+									return _react2.default.createElement(
+										'label',
+										{ key: index, className: 'info__size' },
+										_react2.default.createElement('input', { type: 'radio', name: 'options' }),
+										_react2.default.createElement(
+											'span',
+											{ onClick: function onClick() {
+													return _this3.chooseSize(size);
+												} },
+											size
+										)
+									);
+								})
+							),
+							_react2.default.createElement(
+								'span',
+								{ className: 'info__price' },
+								'\u0426\u0435\u043D\u0430: ',
+								item.price,
+								'$'
+							),
+							_react2.default.createElement(
+								'label',
+								{ className: 'info__quantity' },
+								'\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E: ',
+								_react2.default.createElement('input', { type: 'number', min: '1', max: '9', defaultValue: '1', onChange: this.chooseQuantity })
+							),
+							_react2.default.createElement(
+								'button',
+								{ className: 'btn-buy', href: '', onClick: this.addToCart },
+								'\u041A\u0443\u043F\u0438\u0442\u044C'
+							),
+							_react2.default.createElement(
+								'a',
+								{ className: 'popup-hide', href: '', onClick: this.popupHide() },
+								'\u2716'
+							)
+						)
+					)
+				);
+			}
+		}]);
+
+		return InfoPopup;
+	}(_react.Component);
+
+		exports.default = InfoPopup;
 
 /***/ }
 /******/ ]);

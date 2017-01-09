@@ -50,21 +50,17 @@ a
 		font-weight: 700
 		text-transform: uppercase
 	
-.popup
-	background-color: rgba(0,0,0, .5)
-	cursor: pointer
-	display: flex
-	height: 100%
-	width: 100%
-	position: fixed
-	top: 0
-	left: 0
-	opacity: 0
-	z-index: -1
-	&--show
-		opacity: 1
-		z-index: 2
-	
+.info-popup
+	display: none
+	&--open
+		background-color: rgba(0,0,0, .5)
+		display: flex
+		height: 100%
+		width: 100%
+		position: fixed
+		top: 0
+		left: 0
+			
 .info
 	background-color: white
 	border-radius: 5px
@@ -88,11 +84,9 @@ a
 		margin: 25px 0
 	&__price
 		margin-right: 25px
-	fieldset
-		border: none
 	&__price, &__quantity
-		font-weight: 700
-		font-size: 18px
+		font-weight: 600
+		font-size: 16px
 		text-transform: uppercase
 		input
 			border: none
@@ -100,43 +94,40 @@ a
 			font-weight: 700
 			font-size: 18px
 			width: 32px
-	&__sizes
-		margin-bottom: 15px
-		.form-buy
-			&__sizes 
-				border: none 
-				border-top: 1px solid rgb(21, 64, 44)
-				border-bottom: 1px solid rgb(21, 64, 44)
-				margin-bottom: 20px
-			&__size 
-				color: rgb(21, 64, 44)
-				input[type='radio']
-					display: none
-				input:checked + span
-					background-color: rgb(21, 64, 44)
-					color: white
-				span 
-					cursor: pointer
-					display: inline-block
-					font-weight: 700
-					padding: 10px
-					&:hover
-						background-color: rgba(35, 108, 74, .5)
-			.btn-buy
-				background-color: rgb(21, 64, 44)
-				border-radius: 5px
-				border: none
-				color: white
-				cursor: pointer
-				display: block 
-				height: 40px
-				line-height: 40px
-				margin-top: 20px
-				width: 150px
-				text-align: center
-				text-transform: uppercase
-				&:hover
-					background-color: rgb(35, 108, 74)
+	&__sizes 
+		border: none 
+		border-top: 1px solid rgb(21, 64, 44)
+		border-bottom: 1px solid rgb(21, 64, 44)
+		margin-bottom: 20px
+	&__size 
+		color: rgb(21, 64, 44)
+		input[type='radio']
+			display: none
+		input:checked + span
+			background-color: rgb(21, 64, 44)
+			color: white
+		span 
+			cursor: pointer
+			display: inline-block
+			font-weight: 700
+			padding: 10px
+			&:hover
+				background-color: rgba(35, 108, 74, .5)
+	.btn-buy
+		background-color: rgb(21, 64, 44)
+		border-radius: 5px
+		border: none
+		color: white
+		cursor: pointer
+		display: block 
+		height: 40px
+		line-height: 40px
+		margin-top: 20px
+		width: 150px
+		text-align: center
+		text-transform: uppercase
+		&:hover
+			background-color: rgb(35, 108, 74)
 	.popup-hide
 		color: rgb(177, 14, 0)
 		font-size: 18px
@@ -170,15 +161,72 @@ a
 		display: block
 		height: 50px
 		width: 70px
+		position: relative
 		&:hover 
 			background-color: #e6e6e6
+		.cart-items
+			background-color: #dd2222
+			border-radius: 50%
+			color: white
+			display: block
+			font-size: 13px
+			font-weight: 600
+			padding: 2px 5px
+			position: absolute
+			bottom: 5px
+			right: 5px
 
-.cart
-	//background-color: #f7f7f7
-	background-color: yellow
-	display: block
-	height: 200px
-	width: 300px
+.cart-popup
+	display: none
+	&--show
+		background-color: rgba(0,0,0, .5)
+		display: flex
+		height: 100%
+		width: 100%
+		padding: 10px
+		position: fixed
+		top: 0
+		left: 0
+.cart 
+	background-color: #f7f7f7
+	display: flex
+	flex-direction: column
+	width: 500px
 	margin: auto
+	padding-top: 10px
+	position: relative
+	.total-price
+		font-weight: 700
+		padding: 15px
+		text-align: right
+	.cart-close
+		color: rgb(177, 14, 0)
+		position: absolute
+		top: 3px
+		left: 5px
+.cart-list
+	&__item
+		border-bottom: 1px solid #ebebeb
+		display: flex
+		margin-bottom: 10px
+		padding: 15px
+		position: relative
+		.col:nth-of-type(1)
+			margin-right: 20px 
+		.item-image
+			width: 100px
+		.item-name
+			margin-bottom: 10px
+		span 
+			font-size: 14px
+			margin-right: 10px
+			font-weight: 700
+		.item-remove
+			color: rgb(177, 14, 0)
+			position: absolute
+			top: 10px
+			right: 10px
+
+		
 
 		

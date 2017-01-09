@@ -4,21 +4,43 @@ import { render } from 'react-dom';
 import Cart from './Cart.js'
 
 export default class NavBar extends Component {
-	cartShow(e) {
-		e.preventDefault();
-    const popup = document.querySelector('.popup');
-    popup.classList.add('popup--show');
-		document.body.style.overflow = 'hidden';
-    render(<Cart cart={this.props.cart} />, popup);
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			cartIsOpen: false
+		};
+		this.cartOpen = this.cartOpen.bind(this);	
+		this.cartClose = this.cartClose.bind(this);	
+	}
+	
+	cartOpen(e) {
+		return e => {
+			e.preventDefault();
+			this.setState({
+				cartIsOpen: true
+			})
+		}
+	};
+	
+	cartClose() {
+		this.setState({
+			cartIsOpen: false
+		})
 	}
 
 	render() {
 		return (
 			<div className="navbar">
-				<a href="" className="btn-cart" onClick={this.cartShow.bind(this)}>
-					<span className="cart-items"></span>
+				<a href="" className="btn-cart" onClick={this.cartOpen()}>
+					<span className="cart-items">{this.props.cart.length}</span>
 				</a>
-				<Cart cart={this.props.cart}/>
+				<Cart 
+					cart={this.props.cart} 
+					remove={this.props.remove} 
+					total={this.props.total} 
+					open={this.state.cartIsOpen}
+					cartClose={this.cartClose}/>
 			</div>
 		);
 	}
