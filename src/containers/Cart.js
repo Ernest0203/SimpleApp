@@ -25,9 +25,12 @@ class Cart extends Component {
 	};
 
 	render() {
+		let sameItems = 0;
+		let arr = this.props.cart.reduce((a, {id}) => (a[id] = (a[id]|0)+1, a), []);
+		console.log(arr)
 		let total = 0;
 		if (this.props.cart) {
-			this.props.cart.forEach((item, index) => {
+			this.props.cart.forEach((item) => {
 				if (item.quantity > 1 && item.quantity < 4) {
 					total += item.price * item.quantity
 				}
@@ -78,7 +81,6 @@ function mapStateToProps (state) {
 	return {
 		cart: state.cart.cart,
 		cartIsOpen: state.cart.cartIsOpen,
-		total: state.cart.totalPrice
 	}
 };
 

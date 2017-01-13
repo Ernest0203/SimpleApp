@@ -16,12 +16,12 @@ class InfoPopup extends Component {
 	}
 	
 	chooseSize(size) {
-		this.props.cartActions.chooseSize(size);
+		this.props.listActions.chooseSize(size);
 	};
 
 	chooseQuantity(e) {
 		let quantity = e.target.value;
-		this.props.cartActions.chooseQuantity(quantity);
+		this.props.listActions.chooseQuantity(quantity);
 	};
 
 	addToCart() {
@@ -91,8 +91,8 @@ function mapStateToProps (state) {
 	return {
 		item: state.list.selectedItem,
 		popupIsOpen: state.list.popupIsOpen,
-		size: state.cart.size,
-		quantity: state.cart.quantity,
+		size: state.list.size,
+		quantity: state.list.quantity,
 		cart: state.cart.cart
 	}
 };

@@ -60,7 +60,7 @@
 
 	var _App2 = _interopRequireDefault(_App);
 
-	var _configureStore = __webpack_require__(227);
+	var _configureStore = __webpack_require__(230);
 
 	var _configureStore2 = _interopRequireDefault(_configureStore);
 
@@ -23735,15 +23735,15 @@
 
 	var _List2 = _interopRequireDefault(_List);
 
-	var _NavBar = __webpack_require__(218);
+	var _NavBar = __webpack_require__(220);
 
 	var _NavBar2 = _interopRequireDefault(_NavBar);
 
-	var _InfoPopup = __webpack_require__(220);
+	var _InfoPopup = __webpack_require__(224);
 
 	var _InfoPopup2 = _interopRequireDefault(_InfoPopup);
 
-	__webpack_require__(222);
+	__webpack_require__(225);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23801,13 +23801,15 @@
 
 	var _reactRedux = __webpack_require__(199);
 
-	var _ListActions = __webpack_require__(221);
+	var _ListActions = __webpack_require__(218);
 
 	var listActions = _interopRequireWildcard(_ListActions);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -23824,6 +23826,7 @@
 			var _this = _possibleConstructorReturn(this, (List.__proto__ || Object.getPrototypeOf(List)).call(this, props));
 
 			_this.selectItem = _this.selectItem.bind(_this);
+			_this.sortItems = _this.sortItems.bind(_this);
 			return _this;
 		}
 
@@ -23833,34 +23836,93 @@
 				this.props.listActions.selectItem(item);
 			}
 		}, {
+			key: 'sortItems',
+			value: function sortItems(e) {
+				var sortData = [].concat(_toConsumableArray(this.props.list));
+				switch (e.target.value) {
+					case 'priceUp':
+						console.log(e.target.value);
+						sortData.sort(function (itemA, itemB) {
+							return itemA.price - itemB.price;
+						});
+						this.props.listActions.priceUp(sortData);
+						break;
+					case 'priceDown':
+						console.log(e.target.value);
+						sortData.sort(function (itemA, itemB) {
+							return itemB.price - itemA.price;
+						});
+						this.props.listActions.priceDown(sortData);
+						break;
+					case 'aZ':
+						sortData.sort(function (itemA, itemB) {
+							return itemA.name > itemB.name;
+						});
+						this.props.listActions.sortAz(sortData);
+						break;
+				}
+			}
+		}, {
 			key: 'render',
 			value: function render() {
 				var _this2 = this;
 
 				return _react2.default.createElement(
-					'ul',
-					{ className: 'list' },
-					this.props.list.map(function (item) {
-						return _react2.default.createElement(
-							'li',
-							{ className: 'list__item', key: item.id, data: item, onClick: function onClick() {
-									return _this2.selectItem(item);
-								} },
-							_react2.default.createElement('img', { src: item.image }),
+					'div',
+					null,
+					_react2.default.createElement(
+						'div',
+						{ className: 'sort' },
+						_react2.default.createElement(
+							'span',
+							{ className: 'sort__title' },
+							'\u0421\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C:'
+						),
+						_react2.default.createElement(
+							'select',
+							{ className: 'sort__options', onChange: this.sortItems },
 							_react2.default.createElement(
-								'h4',
-								null,
-								item.name
+								'option',
+								{ value: 'priceUp' },
+								'\u0426\u0435\u043D\u0430 (\u043F\u043E \u0432\u043E\u0437\u0440\u0430\u0441\u0442\u0430\u043D\u0438\u044E)'
 							),
 							_react2.default.createElement(
-								'p',
-								null,
-								'\u0426\u0435\u043D\u0430: ',
-								item.price,
-								'$'
+								'option',
+								{ value: 'priceDown' },
+								'\u0426\u0435\u043D\u0430 (\u043F\u043E \u0443\u0431\u044B\u0432\u0430\u043D\u0438\u044E)'
+							),
+							_react2.default.createElement(
+								'option',
+								{ value: 'aZ' },
+								'\u041F\u043E \u0430\u043B\u0444\u0430\u0432\u0438\u0442\u0443'
 							)
-						);
-					})
+						)
+					),
+					_react2.default.createElement(
+						'ul',
+						{ className: 'list' },
+						this.props.list.map(function (item) {
+							return _react2.default.createElement(
+								'li',
+								{ className: 'list__item', key: item.id, data: item, onClick: function onClick() {
+										return _this2.selectItem(item);
+									} },
+								_react2.default.createElement('img', { src: item.image }),
+								_react2.default.createElement(
+									'h4',
+									null,
+									item.name
+								),
+								_react2.default.createElement(
+									'p',
+									null,
+									'\u0426\u0435\u043D\u0430: ',
+									item.price,
+									'$'
+								)
+							);
+						})
+					)
 				);
 			}
 		}]);
@@ -23895,6 +23957,92 @@
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
+	exports.selectItem = selectItem;
+	exports.popupClose = popupClose;
+	exports.chooseSize = chooseSize;
+	exports.chooseQuantity = chooseQuantity;
+	exports.priceUp = priceUp;
+	exports.priceDown = priceDown;
+	exports.sortAz = sortAz;
+
+	var _List = __webpack_require__(219);
+
+	function selectItem(item) {
+		return {
+			type: _List.SET_ITEM,
+			item: item,
+			popupIsOpen: true
+		};
+	};
+
+	function popupClose() {
+		return {
+			type: _List.POPUP_CLOSE,
+			popupIsOpen: false
+		};
+	};
+
+	function chooseSize(size) {
+		return {
+			type: _List.CHOOSE_SIZE,
+			size: size
+		};
+	};
+
+	function chooseQuantity(quantity) {
+		return {
+			type: _List.CHOOSE_QUANTITY,
+			quantity: quantity
+		};
+	};
+
+	function priceUp(data) {
+		return {
+			type: _List.SORT_PRICEUP,
+			data: data
+		};
+	};
+
+	function priceDown(data) {
+		return {
+			type: _List.SORT_PRICEDOWN,
+			data: data
+		};
+	};
+
+	function sortAz(data) {
+		return {
+			type: _List.SORT_AZ,
+			data: data
+		};
+		};
+
+/***/ },
+/* 219 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var SET_ITEM = exports.SET_ITEM = 'SET_ITEM';
+	var POPUP_CLOSE = exports.POPUP_CLOSE = 'POPUP_CLOSE';
+	var CHOOSE_SIZE = exports.CHOOSE_SIZE = 'CHOOSE_SIZE';
+	var CHOOSE_QUANTITY = exports.CHOOSE_QUANTITY = 'CHOOSE_QUANTITY';
+	var SORT_PRICEUP = exports.SORT_PRICEUP = 'SORT_PRICEUP';
+	var SORT_PRICEDOWN = exports.SORT_PRICEDOWN = 'SORT_PRICEDOWN';
+	var SORT_AZ = exports.SORT_AZ = 'SORT_AZ';
+
+/***/ },
+/* 220 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -23906,11 +24054,11 @@
 
 	var _reactRedux = __webpack_require__(199);
 
-	var _CartActions = __webpack_require__(235);
+	var _CartActions = __webpack_require__(221);
 
 	var cartActions = _interopRequireWildcard(_CartActions);
 
-	var _Cart = __webpack_require__(219);
+	var _Cart = __webpack_require__(223);
 
 	var _Cart2 = _interopRequireDefault(_Cart);
 
@@ -23988,7 +24136,46 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(NavBar);
 
 /***/ },
-/* 219 */
+/* 221 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.addToCart = addToCart;
+	exports.cartToggle = cartToggle;
+
+	var _Cart = __webpack_require__(222);
+
+	function addToCart(item) {
+		return {
+			type: _Cart.ADD_TO_CART,
+			item: item
+		};
+	};
+
+	function cartToggle() {
+		return {
+			type: _Cart.CART_TOGGLE
+		};
+		};
+
+/***/ },
+/* 222 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var ADD_TO_CART = exports.ADD_TO_CART = 'ADD_TO_CART';
+	var CART_TOGGLE = exports.CART_TOGGLE = 'CART_TOGGLE';
+
+/***/ },
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24007,7 +24194,7 @@
 
 	var _reactRedux = __webpack_require__(199);
 
-	var _CartActions = __webpack_require__(235);
+	var _CartActions = __webpack_require__(221);
 
 	var cartActions = _interopRequireWildcard(_CartActions);
 
@@ -24055,9 +24242,15 @@
 			value: function render() {
 				var _this2 = this;
 
+				var sameItems = 0;
+				var arr = this.props.cart.reduce(function (a, _ref) {
+					var id = _ref.id;
+					return a[id] = (a[id] | 0) + 1, a;
+				}, []);
+				console.log(arr);
 				var total = 0;
 				if (this.props.cart) {
-					this.props.cart.forEach(function (item, index) {
+					this.props.cart.forEach(function (item) {
 						if (item.quantity > 1 && item.quantity < 4) {
 							total += item.price * item.quantity;
 						} else if (item.quantity > 3 && item.quantity < 6) {
@@ -24149,8 +24342,7 @@
 	function mapStateToProps(state) {
 		return {
 			cart: state.cart.cart,
-			cartIsOpen: state.cart.cartIsOpen,
-			total: state.cart.totalPrice
+			cartIsOpen: state.cart.cartIsOpen
 		};
 	};
 
@@ -24163,7 +24355,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Cart);
 
 /***/ },
-/* 220 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24182,11 +24374,11 @@
 
 	var _reactRedux = __webpack_require__(199);
 
-	var _ListActions = __webpack_require__(221);
+	var _ListActions = __webpack_require__(218);
 
 	var listActions = _interopRequireWildcard(_ListActions);
 
-	var _CartActions = __webpack_require__(235);
+	var _CartActions = __webpack_require__(221);
 
 	var cartActions = _interopRequireWildcard(_CartActions);
 
@@ -24220,13 +24412,13 @@
 		_createClass(InfoPopup, [{
 			key: 'chooseSize',
 			value: function chooseSize(size) {
-				this.props.cartActions.chooseSize(size);
+				this.props.listActions.chooseSize(size);
 			}
 		}, {
 			key: 'chooseQuantity',
 			value: function chooseQuantity(e) {
 				var quantity = e.target.value;
-				this.props.cartActions.chooseQuantity(quantity);
+				this.props.listActions.chooseQuantity(quantity);
 			}
 		}, {
 			key: 'addToCart',
@@ -24342,8 +24534,8 @@
 		return {
 			item: state.list.selectedItem,
 			popupIsOpen: state.list.popupIsOpen,
-			size: state.cart.size,
-			quantity: state.cart.quantity,
+			size: state.list.size,
+			quantity: state.list.quantity,
 			cart: state.cart.cart
 		};
 	};
@@ -24358,47 +24550,16 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(InfoPopup);
 
 /***/ },
-/* 221 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	exports.selectItem = selectItem;
-	exports.popupClose = popupClose;
-
-	var _List = __webpack_require__(232);
-
-	function selectItem(item) {
-		return {
-			type: _List.SET_ITEM,
-			payload: {
-				item: item,
-				popupIsOpen: true
-			}
-		};
-	};
-
-	function popupClose() {
-		return {
-			type: _List.POPUP_CLOSE,
-			payload: false
-		};
-		};
-
-/***/ },
-/* 222 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(223);
+	var content = __webpack_require__(226);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(226)(content, {});
+	var update = __webpack_require__(229)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -24415,21 +24576,21 @@
 	}
 
 /***/ },
-/* 223 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(224)();
+	exports = module.exports = __webpack_require__(227)();
 	// imports
 
 
 	// module
-	exports.push([module.id, "* {\n  margin: 0;\n  padding: 0;\n}\nbody {\n  background-color: rgba(209,208,195,0.5);\n  box-sizing: border-box;\n  color: #696969;\n  font-family: 'Arial';\n}\nli {\n  list-style: none;\n}\na {\n  text-decoration: none;\n}\n.container {\n  margin: 0 auto;\n  min-width: 280px;\n  padding: 20px;\n  width: 90%;\n}\n.list {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-between;\n}\n.list__item {\n  background-color: #fff;\n  border-radius: 5px;\n  cursor: pointer;\n  margin-bottom: 20px;\n  padding: 25px 10px;\n  min-width: 230px;\n  width: 30%;\n  text-align: center;\n  transition: 0.2s;\n}\n.list__item:hover {\n  box-shadow: 0px 0px 25px 5px rgba(0,0,0,0.2);\n}\n@media (max-width: 840px) {\n  .list__item {\n    width: 45%;\n  }\n}\n@media (max-width: 585px) {\n  .list__item {\n    width: 100%;\n  }\n}\n.list img {\n  margin-bottom: 20px;\n  height: 150px;\n  width: 200px;\n}\n.list h4 {\n  margin-bottom: 20px;\n}\n.list p {\n  font-weight: 700;\n  text-transform: uppercase;\n}\n.info-popup {\n  display: none;\n}\n.info-popup--open {\n  background-color: rgba(0,0,0,0.5);\n  display: flex;\n  height: 100%;\n  width: 100%;\n  position: fixed;\n  top: 0;\n  left: 0;\n}\n.info {\n  background-color: #fff;\n  border-radius: 5px;\n  cursor: default;\n  display: flex;\n  margin: auto;\n  padding: 20px;\n  min-width: 400px;\n  width: 60%;\n  position: relative;\n}\n@media (max-width: 1000px) {\n  .info {\n    flex-direction: column;\n  }\n}\n.info__image {\n  height: auto;\n  width: 80%;\n}\n.info__name {\n  font-size: 20px;\n}\n.info__desc {\n  color: #939393;\n  font-size: 14px;\n  margin: 25px 0;\n}\n.info__price {\n  margin-right: 25px;\n}\n.info__price,\n.info__quantity {\n  font-weight: 600;\n  font-size: 16px;\n  text-transform: uppercase;\n}\n.info__price input,\n.info__quantity input {\n  border: none;\n  color: #696969;\n  font-weight: 700;\n  font-size: 18px;\n  width: 32px;\n}\n.info__sizes {\n  border: none;\n  border-top: 1px solid #15402c;\n  border-bottom: 1px solid #15402c;\n  margin-bottom: 20px;\n}\n.info__size {\n  color: #15402c;\n}\n.info__size input[type='radio'] {\n  display: none;\n}\n.info__size input:checked + span {\n  background-color: #15402c;\n  color: #fff;\n}\n.info__size span {\n  cursor: pointer;\n  display: inline-block;\n  font-weight: 700;\n  padding: 10px;\n}\n.info__size span:hover {\n  background-color: rgba(35,108,74,0.5);\n}\n.info .btn-buy {\n  background-color: #15402c;\n  border-radius: 5px;\n  border: none;\n  color: #fff;\n  cursor: pointer;\n  display: block;\n  height: 40px;\n  line-height: 40px;\n  margin-top: 20px;\n  width: 150px;\n  text-align: center;\n  text-transform: uppercase;\n}\n.info .btn-buy:hover {\n  background-color: #236c4a;\n}\n.info .popup-hide {\n  color: #b10e00;\n  font-size: 18px;\n  position: absolute;\n  top: 5px;\n  right: 10px;\n}\n.info .col {\n  width: 49%;\n}\n@media (max-width: 1000px) {\n  .info .col {\n    width: 100%;\n  }\n  .info .col:nth-of-type(1) {\n    margin-bottom: 20px;\n  }\n}\n.info .col:nth-of-type(1) {\n  text-align: center;\n}\n.navbar {\n  background-color: #f7f7f7;\n  border-radius: 5px;\n  box-shadow: 0px 4px 16px -7px rgba(0,0,0,0.57);\n  display: flex;\n  justify-content: flex-end;\n  margin-bottom: 30px;\n  padding: 10px;\n  position: relative;\n}\n.navbar .btn-cart {\n  background: url(" + __webpack_require__(225) + ") no-repeat 15% 50%;\n  background-size: 40px 40px;\n  background-color: #ebebeb;\n  border-radius: 5px;\n  border: 1px solid #e6e6e6;\n  display: block;\n  height: 50px;\n  width: 70px;\n  position: relative;\n}\n.navbar .btn-cart:hover {\n  background-color: #e6e6e6;\n}\n.navbar .btn-cart .cart-items {\n  background-color: #d22;\n  border-radius: 50%;\n  color: #fff;\n  display: block;\n  font-size: 13px;\n  font-weight: 600;\n  padding: 2px 5px;\n  position: absolute;\n  bottom: 5px;\n  right: 5px;\n}\n.cart-popup {\n  display: none;\n}\n.cart-popup--show {\n  background-color: rgba(0,0,0,0.5);\n  display: flex;\n  height: 100%;\n  width: 100%;\n  padding: 10px;\n  position: fixed;\n  top: 0;\n  left: 0;\n}\n.cart {\n  background-color: #f7f7f7;\n  display: flex;\n  flex-direction: column;\n  width: 500px;\n  margin: auto;\n  padding: 20px 20px 0;\n  position: relative;\n}\n.cart .total-price {\n  font-weight: 700;\n  padding: 15px;\n  text-align: right;\n}\n.cart .cart-close {\n  color: #b10e00;\n  position: absolute;\n  top: 3px;\n  left: 3px;\n}\n.cart-list__item {\n  background-color: #eaeaea;\n  border-bottom: 1px solid #ebebeb;\n  display: flex;\n  padding: 15px;\n  position: relative;\n}\n.cart-list__item .col:nth-of-type(1) {\n  margin-right: 20px;\n}\n.cart-list__item .item-image {\n  width: 100px;\n}\n.cart-list__item .item-name {\n  margin-bottom: 10px;\n}\n.cart-list__item span {\n  font-size: 14px;\n  margin-right: 10px;\n  font-weight: 700;\n}\n.cart-list__item .item-remove {\n  color: #b10e00;\n  position: absolute;\n  top: 10px;\n  right: 10px;\n}\n", ""]);
+	exports.push([module.id, "* {\n  margin: 0;\n  padding: 0;\n}\nbody {\n  background-color: rgba(209,208,195,0.5);\n  box-sizing: border-box;\n  color: #696969;\n  font-family: 'Arial';\n}\nli {\n  list-style: none;\n}\na {\n  text-decoration: none;\n}\n.container {\n  margin: 0 auto;\n  min-width: 280px;\n  padding: 20px;\n  width: 90%;\n}\n.sort {\n  background-color: #fff;\n  box-shadow: 0px 4px 16px -7px rgba(0,0,0,0.57);\n  border-radius: 5px;\n  margin-bottom: 15px;\n  padding: 10px;\n}\n.sort__title {\n  margin-right: 15px;\n}\n.sort__options {\n  border-radius: 5px;\n  border-color: #d9d9d9;\n  padding: 5px;\n}\n.list {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-between;\n}\n.list__item {\n  background-color: #fff;\n  border-radius: 5px;\n  cursor: pointer;\n  margin-bottom: 20px;\n  padding: 25px 10px;\n  min-width: 230px;\n  width: 30%;\n  text-align: center;\n  transition: 0.2s;\n}\n.list__item:hover {\n  box-shadow: 0px 0px 25px 5px rgba(0,0,0,0.2);\n}\n@media (max-width: 840px) {\n  .list__item {\n    width: 45%;\n  }\n}\n@media (max-width: 585px) {\n  .list__item {\n    width: 100%;\n  }\n}\n.list img {\n  margin-bottom: 20px;\n  height: 150px;\n  width: 200px;\n}\n.list h4 {\n  margin-bottom: 20px;\n}\n.list p {\n  font-weight: 700;\n  text-transform: uppercase;\n}\n.info-popup {\n  display: none;\n}\n.info-popup--open {\n  background-color: rgba(0,0,0,0.5);\n  display: flex;\n  height: 100%;\n  width: 100%;\n  position: fixed;\n  top: 0;\n  left: 0;\n}\n.info {\n  background-color: #fff;\n  border-radius: 5px;\n  cursor: default;\n  display: flex;\n  margin: auto;\n  padding: 20px;\n  min-width: 400px;\n  width: 60%;\n  position: relative;\n}\n@media (max-width: 1000px) {\n  .info {\n    flex-direction: column;\n  }\n}\n.info__image {\n  height: auto;\n  width: 80%;\n}\n.info__name {\n  font-size: 20px;\n}\n.info__desc {\n  color: #939393;\n  font-size: 14px;\n  margin: 25px 0;\n}\n.info__price {\n  margin-right: 25px;\n}\n.info__price,\n.info__quantity {\n  font-weight: 600;\n  font-size: 16px;\n  text-transform: uppercase;\n}\n.info__price input,\n.info__quantity input {\n  border: none;\n  color: #696969;\n  font-weight: 700;\n  font-size: 18px;\n  width: 32px;\n}\n.info__sizes {\n  border: none;\n  border-top: 1px solid #15402c;\n  border-bottom: 1px solid #15402c;\n  margin-bottom: 20px;\n}\n.info__size {\n  color: #15402c;\n}\n.info__size input[type='radio'] {\n  display: none;\n}\n.info__size input:checked + span {\n  background-color: #15402c;\n  color: #fff;\n}\n.info__size span {\n  cursor: pointer;\n  display: inline-block;\n  font-weight: 700;\n  padding: 10px;\n}\n.info__size span:hover {\n  background-color: rgba(35,108,74,0.5);\n}\n.info .btn-buy {\n  background-color: #15402c;\n  border-radius: 5px;\n  border: none;\n  color: #fff;\n  cursor: pointer;\n  display: block;\n  height: 40px;\n  line-height: 40px;\n  margin-top: 20px;\n  width: 150px;\n  text-align: center;\n  text-transform: uppercase;\n}\n.info .btn-buy:hover {\n  background-color: #236c4a;\n}\n.info .popup-hide {\n  color: #b10e00;\n  font-size: 18px;\n  position: absolute;\n  top: 5px;\n  right: 10px;\n}\n.info .col {\n  width: 49%;\n}\n@media (max-width: 1000px) {\n  .info .col {\n    width: 100%;\n  }\n  .info .col:nth-of-type(1) {\n    margin-bottom: 20px;\n  }\n}\n.info .col:nth-of-type(1) {\n  text-align: center;\n}\n.navbar {\n  background-color: #f7f7f7;\n  border-radius: 5px;\n  box-shadow: 0px 4px 16px -7px rgba(0,0,0,0.57);\n  display: flex;\n  justify-content: flex-end;\n  margin-bottom: 30px;\n  padding: 10px;\n  position: relative;\n}\n.navbar .btn-cart {\n  background: url(" + __webpack_require__(228) + ") no-repeat 15% 50%;\n  background-size: 40px 40px;\n  background-color: #ebebeb;\n  border-radius: 5px;\n  border: 1px solid #e6e6e6;\n  display: block;\n  height: 50px;\n  width: 70px;\n  position: relative;\n}\n.navbar .btn-cart:hover {\n  background-color: #e6e6e6;\n}\n.navbar .btn-cart .cart-items {\n  background-color: #d22;\n  border-radius: 50%;\n  color: #fff;\n  display: block;\n  font-size: 13px;\n  font-weight: 600;\n  padding: 2px 5px;\n  position: absolute;\n  bottom: 5px;\n  right: 5px;\n}\n.cart-popup {\n  display: none;\n}\n.cart-popup--show {\n  background-color: rgba(0,0,0,0.5);\n  display: flex;\n  height: 100%;\n  width: 100%;\n  padding: 10px;\n  position: fixed;\n  top: 0;\n  left: 0;\n}\n.cart {\n  background-color: #f7f7f7;\n  display: flex;\n  flex-direction: column;\n  width: 500px;\n  margin: auto;\n  padding: 20px 20px 0;\n  position: relative;\n}\n.cart .total-price {\n  font-weight: 700;\n  padding: 15px;\n  text-align: right;\n}\n.cart .cart-close {\n  color: #b10e00;\n  position: absolute;\n  top: 3px;\n  left: 3px;\n}\n.cart-list__item {\n  background-color: #eaeaea;\n  border-bottom: 1px solid #ccc;\n  display: flex;\n  padding: 15px;\n  position: relative;\n}\n.cart-list__item .col:nth-of-type(1) {\n  margin-right: 20px;\n}\n.cart-list__item .item-image {\n  width: 100px;\n}\n.cart-list__item .item-name {\n  margin-bottom: 10px;\n}\n.cart-list__item span {\n  font-size: 14px;\n  margin-right: 10px;\n  font-weight: 700;\n}\n.cart-list__item .item-remove {\n  color: #b10e00;\n  position: absolute;\n  top: 10px;\n  right: 10px;\n}\n", ""]);
 
 	// exports
 
 
 /***/ },
-/* 224 */
+/* 227 */
 /***/ function(module, exports) {
 
 	/*
@@ -24485,13 +24646,13 @@
 
 
 /***/ },
-/* 225 */
+/* 228 */
 /***/ function(module, exports) {
 
 	module.exports = "data:image/png;base64,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"
 
 /***/ },
-/* 226 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -24743,7 +24904,7 @@
 
 
 /***/ },
-/* 227 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24755,7 +24916,7 @@
 
 	var _redux = __webpack_require__(178);
 
-	var _index = __webpack_require__(228);
+	var _index = __webpack_require__(231);
 
 	var _index2 = _interopRequireDefault(_index);
 
@@ -24767,7 +24928,7 @@
 	}
 
 /***/ },
-/* 228 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24778,11 +24939,11 @@
 
 	var _redux = __webpack_require__(178);
 
-	var _list = __webpack_require__(229);
+	var _list = __webpack_require__(232);
 
 	var _list2 = _interopRequireDefault(_list);
 
-	var _cart = __webpack_require__(231);
+	var _cart = __webpack_require__(234);
 
 	var _cart2 = _interopRequireDefault(_cart);
 
@@ -24794,7 +24955,7 @@
 		});
 
 /***/ },
-/* 229 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24807,17 +24968,19 @@
 
 	exports.default = list;
 
-	var _data = __webpack_require__(230);
+	var _data = __webpack_require__(233);
 
 	var _data2 = _interopRequireDefault(_data);
 
-	var _List = __webpack_require__(232);
+	var _List = __webpack_require__(219);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var initialState = {
 		data: _data2.default,
 		selectedItem: null,
+		size: null,
+		quantity: 0,
 		popupIsOpen: false
 	};
 
@@ -24827,16 +24990,26 @@
 
 		switch (action.type) {
 			case _List.SET_ITEM:
-				return _extends({}, state, { selectedItem: action.payload.item, popupIsOpen: action.payload.popupIsOpen });
+				return _extends({}, state, { selectedItem: action.item, popupIsOpen: action.popupIsOpen });
 			case _List.POPUP_CLOSE:
-				return _extends({}, state, { popupIsOpen: action.payload });
+				return _extends({}, state, { popupIsOpen: action.popupIsOpen });
+			case _List.CHOOSE_SIZE:
+				return _extends({}, state, { size: action.size });
+			case _List.CHOOSE_QUANTITY:
+				return _extends({}, state, { quantity: action.quantity });
+			case _List.SORT_PRICEUP:
+				return _extends({}, state, { data: action.data });
+			case _List.SORT_PRICEDOWN:
+				return _extends({}, state, { data: action.data });
+			case _List.SORT_AZ:
+				return _extends({}, state, { data: action.data });
 			default:
 				return state;
 		}
 		}
 
 /***/ },
-/* 230 */
+/* 233 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24912,7 +25085,7 @@
 		exports.default = data;
 
 /***/ },
-/* 231 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24925,12 +25098,10 @@
 
 	exports.default = cart;
 
-	var _Cart = __webpack_require__(233);
+	var _Cart = __webpack_require__(222);
 
 	var initialState = {
 		cart: [],
-		size: null,
-		quantity: 0,
 		cartIsOpen: false
 	};
 
@@ -24939,88 +25110,14 @@
 		var action = arguments[1];
 
 		switch (action.type) {
-			case _Cart.CHOOSE_SIZE:
-				return _extends({}, state, { size: action.payload });
-			case _Cart.CHOOSE_QUANTITY:
-				return _extends({}, state, { quantity: action.payload });
 			case _Cart.ADD_TO_CART:
-				return _extends({}, state, { cart: action.payload });
+				return _extends({}, state, { cart: action.item });
 			case _Cart.CART_TOGGLE:
 				return _extends({}, state, { cartIsOpen: !state.cartIsOpen });
 			default:
 				return state;
 		}
 		}
-
-/***/ },
-/* 232 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var SET_ITEM = exports.SET_ITEM = 'SET_ITEM';
-	var POPUP_CLOSE = exports.POPUP_CLOSE = 'POPUP_CLOSE';
-
-/***/ },
-/* 233 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var CHOOSE_SIZE = exports.CHOOSE_SIZE = 'CHOOSE_SIZE';
-	var CHOOSE_QUANTITY = exports.CHOOSE_QUANTITY = 'CHOOSE_QUANTITY';
-	var ADD_TO_CART = exports.ADD_TO_CART = 'ADD_TO_CART';
-	var CART_TOGGLE = exports.CART_TOGGLE = 'CART_TOGGLE';
-
-/***/ },
-/* 234 */,
-/* 235 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	exports.chooseSize = chooseSize;
-	exports.chooseQuantity = chooseQuantity;
-	exports.addToCart = addToCart;
-	exports.cartToggle = cartToggle;
-
-	var _Cart = __webpack_require__(233);
-
-	function chooseSize(size) {
-		return {
-			type: _Cart.CHOOSE_SIZE,
-			payload: size
-		};
-	};
-
-	function chooseQuantity(quantity) {
-		return {
-			type: _Cart.CHOOSE_QUANTITY,
-			payload: quantity
-		};
-	};
-
-	function addToCart(item) {
-		return {
-			type: _Cart.ADD_TO_CART,
-			payload: item
-		};
-	};
-
-	function cartToggle() {
-		return {
-			type: _Cart.CART_TOGGLE
-		};
-		};
 
 /***/ }
 /******/ ]);
