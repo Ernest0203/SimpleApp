@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
-import List from './List.js';
-import NavBar from './NavBar.js';
-import InfoPopup from './InfoPopup.js';
+import List from '../containers/List.js';
+import NavBar from '../containers/NavBar.js';
+import InfoPopup from '../containers/InfoPopup.js';
 
 import '../style.styl';
 

@@ -1,33 +1,26 @@
 import React, {Component} from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
 
-import * as cartActions from '../actions/CartActions.js';
-
-class Cart extends Component {
+export default class CartComponent extends Component {
 	constructor(props) {
 		super(props);
-				
-		this.removeItem = this.removeItem.bind(this);
-		this.cartClose = this.cartClose.bind(this);
+		
+		this.removeItem = this.removeItem;
 	}
-	
+
 	removeItem(e, item) {
 		e.preventDefault();
 		let cart = [...this.props.cart];
 		cart.splice(item, 1);
 		this.props.cartActions.addToCart(cart);
 	};
-
-	cartClose(e) {
-		e.preventDefault();
-		this.props.cartActions.cartToggle();
-	};
-
+	
 	render() {
+		let sameItems = 0;
+		let arr = this.props.cart.reduce((a, {id}) => (a[id] = (a[id]|0)+1, a), []);
+		console.log(arr)
 		let total = 0;
 		if (this.props.cart) {
-			this.props.cart.forEach((item, index) => {
+			this.props.cart.forEach((item) => {
 				if (item.quantity > 1 && item.quantity < 4) {
 					total += item.price * item.quantity
 				}
@@ -67,25 +60,10 @@ class Cart extends Component {
 						}
 					</ul>
 					<p className="total-price">Сумма: {total}$</p>
-					<a className="cart-close" href="" onClick={this.cartClose}>&#10006;</a>
+					<a className="cart-close" href="" onClick={(e) => this.props.cartActions.cartToggle(e)}>&#10006;</a>
 				</div>
 			</div>
 		);
 	}
 }
 
-function mapStateToProps (state) {
-	return {
-		cart: state.cart.cart,
-		cartIsOpen: state.cart.cartIsOpen,
-		total: state.cart.totalPrice
-	}
-};
-
-function mapDispatchToProps(dispatch) {
-	return {
-		cartActions: bindActionCreators(cartActions, dispatch)
-	}
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Cart)

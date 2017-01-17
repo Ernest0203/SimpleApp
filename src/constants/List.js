@@ -1,2 +1,7 @@
 export const SET_ITEM = 'SET_ITEM'
 export const POPUP_CLOSE = 'POPUP_CLOSE'
+export const CHOOSE_SIZE = 'CHOOSE_SIZE'
+export const CHOOSE_QUANTITY = 'CHOOSE_QUANTITY'
+export const SORT_PRICEUP = 'SORT_PRICEUP'
+export const SORT_PRICEDOWN = 'SORT_PRICEDOWN'
+export const SORT_AZ = 'SORT_AZ'
